@@ -83,24 +83,39 @@ func NewReadDevices() ReadDevicesType {
 // ListDevices returns a DeviceList containing data about all
 // currently connected iOS devices
 func (muxConn *UsbMuxConnection) ListDevices() (DeviceList, error) {
-	err := muxConn.Send(NewReadDevices())
+	fmt.Println("SEP_GO_LOG - ENTERED (muxConn *UsbMuxConnection) ListDevices")
+	readDevices := NewReadDevices()
+	fmt.Printf("SEP_GO_LOG - NewReadDevices: %v", readDevices)
+	err := muxConn.Send(readDevices)
+	fmt.Printf("SEP_GO_LOG - muxConn.Send Error: %v", err)
 	if err != nil {
 		return DeviceList{}, fmt.Errorf("Failed sending to usbmux requesting devicelist: %v", err)
 	}
 	response, err := muxConn.ReadMessage()
+	fmt.Printf("SEP_GO_LOG - muxConn.ReadMessage response: %v", response)
+	fmt.Println()
+	fmt.Printf("SEP_GO_LOG - muxConn.ReadMessage err: %v", err)
 	if err != nil {
 		return DeviceList{}, fmt.Errorf("Failed getting devicelist: %v", err)
 	}
-	return DeviceListfromBytes(response.Payload), nil
+	dlBytes := DeviceListfromBytes(response.Payload)
+	fmt.Printf("SEP_GO_LOG - dlBytes: %v", dlBytes)
+
+	return dlBytes, nil
 }
 
 // ListDevices returns a DeviceList containing data about all
 // currently connected iOS devices using a new UsbMuxConnection
 func ListDevices() (DeviceList, error) {
+	fmt.Println("SEP_GO_LOG - ENTERED ListDevices")
 	muxConnection, err := NewUsbMuxConnectionSimple()
+	fmt.Printf("SEP_GO_LOG - NewUsbMuxConnectionSimple error: %v", err)
 	if err != nil {
 		return DeviceList{}, err
 	}
-	defer muxConnection.Close()
-	return muxConnection.ListDevices()
+	defer muxConnection.ReleaseDeviceConnection()
+	deviceList, ldError := muxConnection.ListDevices()
+	fmt.Printf("SEP_GO_LOG - ldError: %v", ldError)
+	fmt.Println("SEP_GO_LOG - EXITING ListDevices")
+	return deviceList, ldError
 }
