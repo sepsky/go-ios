@@ -30,20 +30,36 @@ func ToUnixSocketPath(socketAddress string) string {
 
 // GetUsbmuxdSocket this is the default socket address for the platform to connect to.
 func GetUsbmuxdSocket() string {
+	fmt.Println("SEP_GO_LOG - ENTERED GetUsbmuxdSocket")
 	socket_override := os.Getenv("USBMUXD_SOCKET_ADDRESS")
+	fmt.Printf("SEP_GO_LOG - socket_override: %v", socket_override)
+
 	if socket_override != "" {
+		var returning string
 		if strings.Contains(socket_override, ":") {
-			return "tcp://" + socket_override
+			returning = "tcp://" + socket_override
 		} else {
-			return "unix://" + socket_override
+			returning = "unix://" + socket_override
 		}
+
+		fmt.Printf("SEP_GO_LOG - socket_override NOT EMPTY: %v", socket_override)
+
+		return returning
 	}
+
+	var returning string
+
 	switch runtime.GOOS {
 	case "windows":
-		return "tcp://127.0.0.1:27015"
+		returning = "tcp://127.0.0.1:27015"
 	default:
-		return "unix:///var/run/usbmuxd"
+		returning = "unix:///var/run/usbmuxd"
 	}
+
+	fmt.Printf("SEP_GO_LOG - socket_override EMPTY: %v", returning)
+
+	fmt.Println("SEP_GO_LOG - EXITED GetUsbmuxdSocket")
+	return returning
 }
 
 // UsbMuxConnection can send and read messages to the usbmuxd process to manage pairrecors, listen for device changes
@@ -63,8 +79,12 @@ func NewUsbMuxConnection(deviceConn DeviceConnectionInterface) *UsbMuxConnection
 
 // NewUsbMuxConnectionSimple creates a new UsbMuxConnection with a connection to /var/run/usbmuxd
 func NewUsbMuxConnectionSimple() (*UsbMuxConnection, error) {
+	fmt.Println("SEP_GO_LOG - ENTERED NewUsbMuxConnectionSimple")
 	deviceConn, err := NewDeviceConnection(GetUsbmuxdSocket())
+	fmt.Printf("SEP_GO_LOG - NewDeviceConnection(GetUsbmuxdSocket error: %v", err)
 	muxConn := &UsbMuxConnection{tag: 0, deviceConn: deviceConn}
+	fmt.Printf("SEP_GO_LOG - UsbMuxConnection{tag muxConn: %v", muxConn)
+	fmt.Println("SEP_GO_LOG - EXITED NewUsbMuxConnectionSimple")
 	return muxConn, err
 }
 
