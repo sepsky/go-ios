@@ -501,7 +501,7 @@ func createTestConfigOnDevice(testSessionID uuid.UUID, info testInfo, houseArres
 	if err != nil {
 		return "", nskeyedarchiver.XCTestConfiguration{}, err
 	}
-
+	fmt.Println("relativeXcTestConfigPath: ", relativeXcTestConfigPath)
 	err = houseArrestService.SendFile([]byte(result), relativeXcTestConfigPath)
 	if err != nil {
 		return "", nskeyedarchiver.XCTestConfiguration{}, err
