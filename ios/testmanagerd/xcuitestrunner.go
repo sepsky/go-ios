@@ -377,7 +377,7 @@ func RunXCUIWithBundleIdsCtx(
 	wdaargs []string,
 	wdaenv []string,
 ) error {
-	fmt.Println("Jumped inside RunXCUIWithBundleIdsCtx")
+	fmt.Println("SEP_GO_LOG - Jumped inside RunXCUIWithBundleIdsCtx")
 	version, err := ios.GetProductVersion(device)
 	if err != nil {
 		return err
@@ -392,7 +392,7 @@ func RunXCUIWithBundleIdsCtx(
 	if err != nil {
 		return err
 	}
-	fmt.Println("Running on iOS 14+, will use xcode12ctx")
+	fmt.Println("SEP_GO_LOG - Running on iOS 14+, will use xcode12ctx")
 	return runXUITestWithBundleIdsXcode12Ctx(ctx, bundleID, testRunnerBundleID, xctestConfigFileName, device, conn, wdaargs, wdaenv)
 }
 
